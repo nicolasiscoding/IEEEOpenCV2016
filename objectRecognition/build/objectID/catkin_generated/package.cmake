@@ -1,0 +1,7 @@
+set(_CATKIN_CURRENT_PACKAGE "objectID")
+set(objectID_MAINTAINER "nicolas <nicolas@todo.todo>")
+set(objectID_DEPRECATED "")
+set(objectID_VERSION "0.0.0")
+set(objectID_BUILD_DEPENDS "openni_camera" "openni_launch" "roscpp" "rospy" "std_msgs")
+set(objectID_RUN_DEPENDS "openni_camera" "openni_launch" "roscpp" "rospy" "std_msgs")
+set(objectID_BUILDTOOL_DEPENDS "catkin")
