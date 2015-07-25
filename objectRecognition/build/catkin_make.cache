@@ -1,2 +1,0 @@
-objectID
--DCATKIN_DEVEL_PREFIX=/home/nicolas/objectRecognition_ws/devel -DCMAKE_INSTALL_PREFIX=/home/nicolas/objectRecognition_ws/install -G Unix Makefiles

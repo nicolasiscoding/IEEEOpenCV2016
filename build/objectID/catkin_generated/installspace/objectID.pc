@@ -1,8 +1,0 @@
-prefix=/home/nicolas/objectRecognition_ws/install
-
-Name: objectID
-Description: Description of objectID
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/nicolas/objectRecognition_ws/install/lib 
-Requires: 
