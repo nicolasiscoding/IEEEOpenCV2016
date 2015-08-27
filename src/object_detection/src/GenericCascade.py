@@ -3,25 +3,43 @@ import cv2
 import rospy
 import roslib
 import numpy as np
+import os.path
 roslib.load_manifest('object_detection')
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 
-#### WORKING EXAMPLE ####
+
+'''
+#############################################################
+#   Created by:     IEEE Hardware Team 2016                 #
+#   Created for:    The use of detecting images with a      #
+#                   Cascade Classifier given a trained file #
+#                                                           #    
+#   Modified Date:  Aug. 27th, 2015                         #
+#   Modified by:    Nicolas Fry                             #        
+#   Reason Mod.:    Cleaning up code for commit             #
+#                                                           #
+#############################################################
+'''
 
 '''
 
 To see the output, open a terminal. Type "rqt" (without quotes) click on plugins > 
 visualization, then find the topic that the image is being published to
-the topic name is /camera/test_opencv
+the topic name is /camera/GenericCascade
 
 '''
 
-
 cascade_path = '/path/to/cascade.xml'
-candy_cascade = cv2.CascadeClassifier(cascade_path)
 
-class image_test():
+if os.path.isfile(cascade_path) is not True:
+    print '\n\n***********!!!No training file present\n\n'
+loadedCascadeClassifier = cv2.CascadeClassifier(cascade_path)
+
+##Added this for debug purposes of creating a window
+cv2.namedWindow("Image window", cv2.WINDOW_NORMAL)
+
+class CascadeClassifier():
 
     def __init__(self):
         #create opencv instance
@@ -30,8 +48,8 @@ class image_test():
         #create a message subscriber to the topic "/camera/rgb/image_raw" which receives a message of type Image from sensor_msgs    
         self.image_sub = rospy.Subscriber("/camera/rgb/image_color", Image, self.display_callback)
 
-        #create a message publisher to the topic "/camera/test_opencv" that publishes sensor_msgs of type Image
-        self.image_pub = rospy.Publisher("/camera/candyfinder",Image)
+        #create a message publisher to the topic "/camera/GenericCascade" that publishes sensor_msgs of type Image
+        self.image_pub = rospy.Publisher("/camera/GenericCascade",Image)
 
     #callback function that takes the image feed that is being published on "/camera/rgb/image_raw"     
     def display_callback(self,data):
@@ -46,18 +64,19 @@ class image_test():
 
 		#convert image to greyscale
         greyimage = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
+        greyimage = cv2.equalizeHist(greyimage)
 
-		#Look at greyscale frame and find the rectangles
-        candy = candy_cascade.detectMultiScale(greyimage)
-        candycount = 0
+		#Look at greyscale image and find occurances of object create a locatedcount variable for debug purposes
+        located = loadedCascadeClassifier.detectMultiScale(greyimage,scaleFactor=5.5,minNeighbors=48,minSize=(38,38), flags = cv2.CASCADE_SCALE_IMAGE)
+        locatedcount = 0
 		
-        #Place rectangles on the colored frame where the candy box *should be*
+        #Place rectangles on the colored frame where the located objected *should be*
         #X and Y should be the bottom left corner of the detected figure, adding the width
-        #and the height should yielf the top right corner. Using this, draw a rectangle thats blue
+        #and the height should yielf the top right corner. Using this, draw a rectangle that is green
         #around the image
-        for (x,y,w,h) in candy:
-            candycount = candycount + 1
-            cv2.rectangle(cv_image, (x,y), (x+w, y+h), (255,0,0), 2)
+        for (x,y,w,h) in located:
+            locatedcount = locatedcount + 1
+            r = cv2.rectangle(cv_image, (x,y), (x+w, y+h), (0,255,0), 3)
 
         #Show cv_image with rectangles in window because publisher below is not working for me
         cv2.imshow("Image window", cv_image)
@@ -73,11 +92,11 @@ class image_test():
         
 
 def main():
-    #initializes node of name 'image_test'
-    rospy.init_node('image_test', anonymous = True)
+    #initializes node of name 'CascadeClassifier'
+    rospy.init_node('CascadeClassifier', anonymous = True)
 
-    #creates an instance of image_test
-    ic = image_test()
+    #creates an instance of CascadeClassifier
+    ic = CascadeClassifier()
 
     #keeps python from exiting
     rospy.spin()
