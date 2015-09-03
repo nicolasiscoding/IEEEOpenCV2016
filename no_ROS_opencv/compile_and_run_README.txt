@@ -11,7 +11,7 @@ to your terminal (without the arrows):
 This tells g++ where to find the despendencies for the file to compile.
 It creates a file called color_normalizer_exec
 
-After it compiles just type int your terminal (without the arrow):
+After it compiles just type this into your terminal (without the arrow):
 
 
 
