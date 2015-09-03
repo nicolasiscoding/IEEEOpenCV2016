@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include <opencv2/opencv.hpp>
-#include <exception>
+#include <stdexcept>
 
 class color_hist_provider
 {
@@ -114,7 +114,6 @@ void color_hist_provider::generate_hist(const  cv::Mat &Image, cv::Mat &histoIma
 
 	else
 	{
-		std::cout << "Invalid Argument!" << std::endl;
-		exit(0);
+		throw std::invalid_argument("generate_hist only takes in 'equalize or 'hist'");
 	}
 }
