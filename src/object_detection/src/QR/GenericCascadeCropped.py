@@ -4,9 +4,12 @@ import rospy
 import roslib
 import numpy as np
 import os.path
+import zbar
 roslib.load_manifest('object_detection')
 from sensor_msgs.msg import Image
+from PIL import Image as pilImg
 from cv_bridge import CvBridge, CvBridgeError
+
 
 
 '''
@@ -15,9 +18,11 @@ from cv_bridge import CvBridge, CvBridgeError
 #   Created for:    The use of detecting images with a      #
 #                   Cascade Classifier given a trained file #
 #                                                           #    
-#   Modified Date:  Aug. 27th, 2015                         #
+#   Modified Date:  Sep. 08th, 2015                         #
 #   Modified by:    Nicolas Fry                             #        
-#   Reason Mod.:    Cleaning up code for commit             #
+#   Reason Mod.:    Created Cropping of images instead of   #
+#                   Binary add, also integrating zbar for   #
+#                   Decoding purposes                       #
 #                                                           #
 #############################################################
 '''
@@ -30,7 +35,7 @@ the topic name is /camera/GenericCascade
 
 '''
 
-cascade_path = '/path/to/cascade.xml'
+cascade_path = '/home/nicolas/objectorientation/src/object_detection/src/QR/QRCodeCascadeRC1/cascade.xml'
 
 if os.path.isfile(cascade_path) is not True:
     print '\n\n***********!!!No training file present\n\n'
@@ -63,20 +68,57 @@ class CascadeClassifier():
             print e
 
 		#convert image to greyscale
+        cv_imagecopy = cv_image.copy()
         greyimage = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
         greyimage = cv2.equalizeHist(greyimage)
 
 		#Look at greyscale image and find occurances of object create a locatedcount variable for debug purposes
         located = loadedCascadeClassifier.detectMultiScale(greyimage,scaleFactor=5.5,minNeighbors=48,minSize=(38,38), flags = cv2.CASCADE_SCALE_IMAGE)
         locatedcount = 0
-		
+
         #Place rectangles on the colored frame where the located objected *should be*
         #X and Y should be the bottom left corner of the detected figure, adding the width
         #and the height should yielf the top right corner. Using this, draw a rectangle that is green
-        #around the image
+        #around the image. 
+
+        #initialize ZBAR by creating a reader 
+        scanner = zbar.ImageScanner()
+        scanner.parse_config('enable')
+
+        #The list cropped serves to hold the different instances of QR codes detected.
+        cropped = []
+
+        indexOfCropped = 0
         for (x,y,w,h) in located:
             locatedcount = locatedcount + 1
-            r = cv2.rectangle(cv_image, (x,y), (x+w, y+h), (0,255,0), 3)
+            cropped.append(cv_image[(y - 5):(y + h + 5), (x - 5):(x + w + 5)])
+            cv2.rectangle(cv_image, (x-25 ,y -5), (x+w + 5, y+h + 5), (0,255,0), 1)
+	
+	#Debug to see how many are in cropped
+        #print len(cropped)
+        if(len(cropped) > 0 and len(cropped) < 6):
+            imageIndex = 0
+
+            for image in cropped:
+
+                imgRGB = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+		#height, width, channels = imgRGB.shape
+		height, width = imgRGB.shape
+		raw = imgRGB.tostring()
+                zbar_image = zbar.Image(width, height, 'Y800', raw)
+		
+		scanner.scan(zbar_image)
+
+		#print zbar_image
+		# For debug purposes 
+		for symbol in zbar_image:
+			print 'decoded', symbol.type, 'symbol', '"%s"' % symbol.data
+
+		
+		
+                #cv2.imshow(str(imageIndex), image)
+                imageIndex += 1
+
 
         #Show cv_image with rectangles in window because publisher below is not working for me
         cv2.imshow("Image window", cv_image)

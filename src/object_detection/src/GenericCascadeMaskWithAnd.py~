@@ -63,34 +63,32 @@ class CascadeClassifier():
             print e
 
 		#convert image to greyscale
-
-        cv_imagecopy = cv_image.copy()
         greyimage = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
         greyimage = cv2.equalizeHist(greyimage)
 
 		#Look at greyscale image and find occurances of object create a locatedcount variable for debug purposes
         located = loadedCascadeClassifier.detectMultiScale(greyimage,scaleFactor=5.5,minNeighbors=48,minSize=(38,38), flags = cv2.CASCADE_SCALE_IMAGE)
         locatedcount = 0
-
+		
         #Place rectangles on the colored frame where the located objected *should be*
         #X and Y should be the bottom left corner of the detected figure, adding the width
         #and the height should yielf the top right corner. Using this, draw a rectangle that is green
         #around the image
-        cropped = []
-
-        indexOfCropped = 0
         for (x,y,w,h) in located:
             locatedcount = locatedcount + 1
-            cropped.append(cv_image[(y - 5):(y + h + 5), (x - 5):(x + w + 5)])
-            cv2.rectangle(cv_image, (x-25 ,y -5), (x+w + 5, y+h + 5), (0,255,0), 1)
+            r = cv2.rectangle(cv_image, (x,y), (x+w, y+h), (0,255,0), -1)
 
-        print len(cropped)
-        if(len(cropped) > 0 and len(cropped) < 6):
-            imageIndex = 0
-            for image in cropped:
-                cv2.imshow(str(imageIndex), image)
-                imageIndex += 1
+        #create HSV image for thresholding
+        hsv = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
+	print hsv
 
+        #create thresholding variable to look for shades of green (found objects)
+        lower_green = np.array([0,100,0])
+        upper_green = np.array([0,255,0])
+
+        #create a mask from the HSV to show only the original image
+        mask = cv2.inRange(hsv, lower_green, upper_green)
+        cv2.imshow("Mask", mask)
 
         #Show cv_image with rectangles in window because publisher below is not working for me
         cv2.imshow("Image window", cv_image)
