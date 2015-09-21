@@ -30,7 +30,7 @@ the topic name is /camera/GenericCascade
 
 '''
 
-cascade_path = '/home/nicolas/objectorientation/src/object_detection/src/QR/QRCodeCascadeRC1/cascade.xml'
+cascade_path = '/home/nicolas/objectorientation/src/object_detection/src/QRCodeCascadeRC1/cascade.xml'
 
 if os.path.isfile(cascade_path) is not True:
     print '\n\n***********!!!No training file present\n\n'
