@@ -16,16 +16,12 @@ import numpy
 #############################################################
 '''
 
-def SampleTemplate():
+def SampleTemplate(image):
 
 	'''
 	Given-when-then is an agile TESTING method, but it can be used in software development as well
 	It organizes the code where we have something 'Given to us', something we have to do, then 
 	'''
-
-	#Given I have a  OpenCV image frame 
-	image = cv2.imread("../blockImageRepository/yellow/longblock/TopView.JPG")
-
 
 	#When I apply image manipulations such as canny edge detection
 	edges = cv2.Canny(image, 100, 200)
@@ -38,7 +34,11 @@ def SampleTemplate():
 
 def main():
 	#initialize class
-	SampleTemplate()
+
+	#Given I have a  OpenCV image frame 
+	imageSource = cv2.imread("../blockImageRepository/yellow/longblock/TopView.JPG")
+
+	SampleTemplate(imageSource)
 
 	#close openCv windows gracefully
 	cv2.destroyAllWindows()
