@@ -62,13 +62,25 @@ def SampleTemplate(image, blurRadius = 5, minLineLength = 50, maxLineGap = 130, 
         
         image[dst>0.01*dst.max()]=[0,0,255]
 
+        #Coordinates
+        for y in range(0,grayOutline.shape[0]):
+        	for x in range(0, grayOutline.shape[1]):
+        		harris = cv2.cv.Get2D(cv2.cv.fromarray(dst),y,x)#(x,y) values
+        		if harris[0] > 0.01*dst.max():
+        			print x,y
+        			center = (x**2+y**2)**(0.5)
+        			
+        			cv2.circle(image, (x,y),2,(0,0,255))
+        
+
+
         cv2.namedWindow("Blur", cv2.WINDOW_NORMAL)
         cv2.namedWindow("Original", cv2.WINDOW_NORMAL)
         cv2.namedWindow("Canny Edge Detection", cv2.WINDOW_NORMAL)
         cv2.imshow("Original", image)
         cv2.imshow('Canny Edge Detection', rgbEdges)
         cv2.imshow('Blur', blur)
-        cv2.waitKey(1)
+        cv2.waitKey(100)
  
 def main():
         #initialize class
