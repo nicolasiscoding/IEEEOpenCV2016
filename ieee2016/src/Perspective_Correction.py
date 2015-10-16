@@ -1,6 +1,18 @@
 import cv2
 import numpy as np
 
+'''
+#############################################################
+#                IEEE Hardware Team 2016                    #
+#   Created by: Christine Moore                                #
+#   Email:      christinemoore321@gmail.com                       #
+#                                                           #
+#   Created for:    perspective correction and transfrom    #
+#   Created Date:   October 8th, 2015                    #
+#
+#############################################################
+'''
+
 corners = []
 line_segments = []
 x_values = []
