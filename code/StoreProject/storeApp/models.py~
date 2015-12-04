@@ -1,0 +1,35 @@
+from django.db import models
+#user entity
+class User(models.Model):
+	user_id = models.AutoField(primary_key=True)
+	user_name = models.CharField(max_length=50)
+	user_password = models.CharField(max_length=20)
+	user_address = models.CharField(max_length=50)
+	user_email = models.CharField(max_length=30)
+	user_is_staff = models.BooleanField(default=False)
+	def __str__(self):
+		return self.user_id
+#order entity
+class Order(models.Model):
+	order_id = models.AutoField(primary_key=True)
+	order_date = models.DateField()
+	order_paid = models.BooleanField(default=False)
+	user = models.ManyToManyField(User)
+	def __str__(self):
+		return self.order_id
+#product entity
+class Product(models.Model):
+	product_id = models.AutoField(primary_key=True)
+	product_name = models.CharField(max_length=50)
+	product_price = models.IntegerField()
+	product_stock_quantity = models.IntegerField()
+	product_description = models.CharField(max_length=400)
+	product_active = models.BooleanField(default=False)
+	order = models.ManyToManyField(Order)
+	def __str__(self):
+		return self.product_id
+#supplier entity
+class Supplier(models.Model):
+	supplier_id = models.AutoField(primary_key=True)
+	supplier_name = models.CharField(max_length=100)
+	product = models.ManyToManyField(Product)
